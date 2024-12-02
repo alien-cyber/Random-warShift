@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random WarShift Chess</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body > 
+    <div class="container">
+        <div id="board" class="chess-board"></div>
+        <div class="game-info">
+            <div id="player-turn">Current Turn: White</div>
+            <div id="shift-counter">Moves until shift: 3</div>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="custom-popup" id="winnerPopup">
+        <div class="popup-content">
+            <div class="popup-message" id="winnerMessage"></div>
+            <button class="close-popup" onclick="closePopup()">Play Again</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
