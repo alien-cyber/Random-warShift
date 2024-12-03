@@ -258,7 +258,7 @@ class RandomWarShift {
         
             if (!isValidMove) {
                 console.error("Invalid move attempted!");
-                return false; // Invalid move, do nothing
+                return {'move':false,'aimove':false}; // Invalid move, do nothing
             }
         
             // Perform the move
@@ -284,7 +284,7 @@ class RandomWarShift {
                         showWinnerPopup(`Checkmate! ${movedPiece.color.charAt(0).toUpperCase() + 
                               movedPiece.color.slice(1)} wins!`);
                     }, 100);
-                    return true; // Game ends
+                    return {'move':true,'aimove':false}; // Game ends
                 }
             }
         
@@ -295,13 +295,14 @@ class RandomWarShift {
                 this.movesTillShift = Math.floor(Math.random() * 3) + 3; // Reset the counter
                 console.log("Random shift occurred!");
             }
+            let move=false;
         
             // Handle AI if enabled and it's AI's turn
             if (this.isAIEnabled && this.currentPlayer !== this.playerColor) {
-                setTimeout(() => this.makeAIMove(), 500); // Delay to simulate thinking time
+                move=true;
             }
         
-            return true;
+            return {'move':true,'aimove':move};
         }
         
     
@@ -412,13 +413,9 @@ class RandomWarShift {
         }
 
         // Make the move
-        let success=await this.makeMove(bestMove.from[0], bestMove.from[1], 
+       await this.makeMove(bestMove.from[0], bestMove.from[1], 
                           bestMove.to[0], bestMove.to[1]);
-         if (success) {
-                    await this.animateMove(selectedRow, selectedCol, row, col);
-                    this.updateBoard();
-                    this.updateGameInfo();
-                }
+        
         // Trigger AI move callback
       
     }
@@ -538,10 +535,25 @@ class GameUI {
             if (this.validMoves.some(([r, c]) => r === row && c === col)) {
                 // Make the move
                 const success = await this.game.makeMove(selectedRow, selectedCol, row, col);
-                if (success) {
+                if (success['move']) {
                     await this.animateMove(selectedRow, selectedCol, row, col);
+                    console.log("animated");
                     this.updateBoard();
+                    console.log("updated");
+
                     this.updateGameInfo();
+                    console.log("updated game info");
+
+
+                }
+                if(success['aimove']){
+                    await this.game.makeAIMove();
+                    console.log("animated ai");
+                    this.updateBoard();
+                    console.log("updated aai");
+
+                    this.updateGameInfo();
+                    console.log("updated game info  ai");
                 }
             }
             
@@ -614,12 +626,18 @@ class GameUI {
             `Moves until shift: ${this.game.movesTillShift}`;
     }
 
-    toggleAI() {
+    async toggleAI() {
         this.game.isAIEnabled = !this.game.isAIEnabled;
         if (this.game.isAIEnabled) {
             this.game.playerColor = 'black';
             this.game.currentPlayer = 'white';
-            this.game.makeAIMove();
+            await this.game.makeAIMove();
+            console.log("animated ai");
+            this.updateBoard();
+            console.log("updated ai");
+
+            this.updateGameInfo();
+            console.log("updated game info  ai");
         }
     }
 
@@ -725,7 +743,10 @@ function showWinnerPopup(winner) {
 
 function closePopup() {
     document.getElementById('overlay').style.display = 'none';
+
     document.getElementById('winnerPopup').style.display = 'none';
+    window.location.reload();
+
     // Add any reset game logic here if needed
 }
 
