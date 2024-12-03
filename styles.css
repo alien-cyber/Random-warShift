@@ -142,3 +142,19 @@ body {
     background-color: #2980b9;
 }
 
+
+#ad-container {
+    background: transparent;
+    padding: 10px;
+    max-width: 300px;
+    max-height: 250px;
+}
+
+/* Optional: Add a media query to hide ads on small screens */
+@media screen and (max-width: 768px) {
+    #ad-container {
+        display: none;
+    }
+}
+
+
