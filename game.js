@@ -5,6 +5,12 @@ class Piece {
     }
 }
 
+// Create audio objects for chess sounds
+const moveSound = new Audio();
+moveSound.src = 'sounds/move.mp3';  // Chess piece movement sound
+const captureSound = new Audio();
+captureSound.src = 'sounds/capture.mp3'; 
+  // Capture piece sound
 
 
 
@@ -495,6 +501,7 @@ class GameUI {
         this.boardElement.parentElement.appendChild(controlsDiv);
         
         this.updateBoard();
+        
     }
 
     setupAICallbacks() {
@@ -588,11 +595,26 @@ class GameUI {
             for(let col = 0; col < 8; col++) {
                 const cell = cells[row * 8 + col];
                 const piece = this.game.board[row][col];
+                const previousContent = cell.textContent;
+                
+                // Update the cell content
                 cell.textContent = piece ? piece.symbol : '';
                 cell.style.color = piece ? piece.color : '';
+                
+                // Play sound if there's a change in the board
+                if (previousContent !== cell.textContent) {
+                    if (previousContent && cell.textContent) {
+                        // If there was a piece and now there's a different piece, it's a capture
+                        captureSound.play();
+                    } else if (cell.textContent) {
+                        // If there's now a piece where there wasn't one before, it's a move
+                        moveSound.play();
+                    }
+                }
             }
         }
     }
+    
 
     highlightValidMoves() {
         this.clearHighlights();
@@ -629,15 +651,22 @@ class GameUI {
     async toggleAI() {
         this.game.isAIEnabled = !this.game.isAIEnabled;
         if (this.game.isAIEnabled) {
+            if(this.game.currentPlayer =='white'){
             this.game.playerColor = 'black';
             this.game.currentPlayer = 'white';
+        }
+            else{
+                this.game.playerColor = 'white';
+                this.game.currentPlayer = 'black';
+
+            }
             await this.game.makeAIMove();
-            console.log("animated ai");
+         
             this.updateBoard();
-            console.log("updated ai");
+         
 
             this.updateGameInfo();
-            console.log("updated game info  ai");
+        
         }
     }
 
@@ -728,8 +757,12 @@ document.addEventListener('DOMContentLoaded', () => {
     styleSheet.textContent = additionalStyles;
     document.head.appendChild(styleSheet);
 
+
     // Start the game
     const game = new GameUI();
+ 
+
+    
     
     
 });
